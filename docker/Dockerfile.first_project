@@ -1,0 +1,27 @@
+FROM ubuntu:jammy AS builder
+
+# Install necessary packages
+RUN apt update && apt install -y \
+    build-essential \
+    gcc-arm-none-eabi \
+    cmake \
+    git
+
+# Copy the source code into the container
+COPY ./First_Project/. /code
+COPY ./mtb_shared /code/sdk
+
+# Create output directory
+RUN mkdir -p /out
+
+# Build the code
+WORKDIR /code
+RUN mkdir -p out && cd out && \
+    cmake .. && \
+    make -j${nproc} && \
+    cp first-project.elf /out/first-project.elf && \
+    cp first-project.hex /out/first-project.hex
+
+# Use a second stage to minimize the final image
+FROM scratch
+COPY --from=builder /out/ /bin
