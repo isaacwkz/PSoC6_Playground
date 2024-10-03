@@ -74,6 +74,17 @@
                 "cy8c624abzi-d44"
             ],
             // "rtos": "ThreadX",
+            "rttConfig": {
+                "enabled": true,
+                "address": "auto",
+                "decoders": [
+                    {
+                        "label": "",
+                        "port": 0,
+                        "type": "console"
+                    }
+                ]
+            },
             "postLaunchCommands": [
                 "set substitute-path /code/sdk ../mtb_shared",
                 "set substitute-path /code/ ."

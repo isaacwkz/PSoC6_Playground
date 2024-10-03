@@ -1,15 +1,21 @@
 #include "debug_console.h"
 #include <stdarg.h>
 #include "common.h"
+#include "SEGGER_RTT.h"
 
+#if DEBUG_OUTPUT_SINK != 3
 static cyhal_uart_t debug_uart;
 static uint8_t      rx_buf[DEBUG_MAX_BUF_LENGTH];
-static uint8_t      tx_buf[DEBUG_MAX_BUF_LENGTH];
+#endif
+static uint8_t tx_buf[DEBUG_MAX_BUF_LENGTH];
 
 static TX_MUTEX         debug_mutex;
 static volatile uint8_t use_mutex = 0;
 
 void debug_console_init(void) {
+#if DEBUG_OUTPUT_SINK == 3
+	SEGGER_RTT_Init();
+#else
 	cy_rslt_t              rslt        = 0;
 	const cyhal_uart_cfg_t uart_config = {
 		.data_bits      = 8,
@@ -17,15 +23,16 @@ void debug_console_init(void) {
 		.parity         = CYHAL_UART_PARITY_NONE,
 		.rx_buffer      = rx_buf,
 		.rx_buffer_size = DEBUG_MAX_BUF_LENGTH};
-#ifdef DEBUG_OUTPUT_TO_CMSIS_DAP
-	rslt |= cyhal_uart_init(&debug_uart, CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX, NC, NC, NULL, &uart_config);
-#else
+#if DEBUG_OUTPUT_SINK == 2
 	rslt |= cyhal_uart_init(&debug_uart, P10_1, P10_0, NC, NC, NULL, &uart_config);
+#else
+	rslt |= cyhal_uart_init(&debug_uart, CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX, NC, NC, NULL, &uart_config);
 #endif
 	rslt |= cyhal_uart_set_baud(&debug_uart, DEBUG_UART_BAUD_RATE, NULL);
 	if (rslt != CY_RSLT_SUCCESS) {
 		CY_ASSERT(0);
 	}
+#endif
 }
 
 void debug_console_init_mutex(void) {
@@ -35,23 +42,25 @@ void debug_console_init_mutex(void) {
 	}
 }
 
-// int _write(int fd, char *ptr, int len) {
-// 	(void)fd;
-// 	SEGGER_RTT_Write(0, (char *)ptr, len);
-// 	return (int)len;
-// }
-
 int _write(int fd, char *ptr, int len) {
 	(void)fd;
 	size_t sz = len;
 	if (use_mutex) {
 		UINT status = tx_mutex_get(&debug_mutex, DEBUG_CONSOLE_MUTEX_WAIT);
 		if (status == TX_SUCCESS) {
+#if DEBUG_OUTPUT_SINK == 3
+			SEGGER_RTT_Write(0, (void *)ptr, sz);
+#else
 			cyhal_uart_write(&debug_uart, (void *)ptr, &sz);
+#endif
 			tx_mutex_put(&debug_mutex);
 		} // If we can't take the mutex we just drop the message
 	} else {
+#if DEBUG_OUTPUT_SINK == 3
+		SEGGER_RTT_Write(0, (void *)ptr, sz);
+#else
 		cyhal_uart_write(&debug_uart, (void *)ptr, &sz);
+#endif
 	}
 	return sz;
 }

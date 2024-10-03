@@ -83,9 +83,12 @@
             "DEBUG",
             "TARGET_APP_CY8CKIT_062S2_AI"
         ],
-        "threadxIncludePath": [
+        "depsIncludePath": [
             "deps/threadx/common/inc",
-            "deps/threadx/ports/cortex_m4/gnu/inc"
+            "deps/threadx/ports/cortex_m4/gnu/inc",
+            "deps/custom_configs/",
+            "deps/RTT/RTT",
+            "deps/RTT/Config"
         ]
     },
     "configurations": [
@@ -101,7 +104,7 @@
             "cppStandard": "c++11",
             "includePath": [
                 "${mtbDefaultIncludePath}",
-                "${threadxIncludePath}"
+                "${depsIncludePath}"
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,

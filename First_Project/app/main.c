@@ -169,7 +169,7 @@ void thread_0_entry(ULONG thread_input) {
 		bruh += 1;
 		LOG_INFO("ABCDEFGHIJ\n\r");
 		cyhal_gpio_toggle(CYBSP_USER_LED);
-		tx_thread_sleep(1);
+		tx_thread_sleep(13);
 	}
 }
 
@@ -180,7 +180,7 @@ void thread_1_entry(ULONG thread_input) {
 		bruh += 1;
 		LOG_INFO("1234567890!\n\r");
 		cyhal_gpio_toggle(CYBSP_USER_LED);
-		tx_thread_sleep(2);
+		tx_thread_sleep(7);
 	}
 }
 

@@ -18,6 +18,20 @@
             }
         },
         {
+            "label": "Open RTT (PyOCD)",
+            "type": "process",
+            "command": "bash",
+            "args": [
+                "--norc",
+                "-c",
+                "pyocd rtt -t cy8c624abzi-d44 -M attach"
+            ],
+            "group": {
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "Build",
             "type": "process",
             "command": "bash",

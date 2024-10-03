@@ -5,7 +5,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define DEBUG_OUTPUT_TO_CMSIS_DAP
+// 1 - CMSIS-DAP UART
+// 2 - UART1 (J15 header)
+// 3 - RTT
+// Any other value defaults to CMSIS-DAP UART
+#define DEBUG_OUTPUT_SINK 3
 
 #define DEBUG_CONSOLE_MUTEX_WAIT 50
 

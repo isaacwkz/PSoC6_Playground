@@ -94,7 +94,7 @@ add_executable(${PROJECT_NAME}.elf ${SOURCES})
 
 # Add subdirectory for threadx
 add_subdirectory(${CMAKE_SOURCE_DIR}/deps)
-target_link_libraries(${PROJECT_NAME}.elf threadx_lib)
+target_link_libraries(${PROJECT_NAME}.elf threadx_lib rtt_lib)
 
 target_include_directories(${PROJECT_NAME}.elf PUBLIC
         ${PROJECT_INC_DIRS}
