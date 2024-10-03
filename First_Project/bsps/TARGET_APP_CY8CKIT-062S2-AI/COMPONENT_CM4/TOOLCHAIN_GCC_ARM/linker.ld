@@ -41,7 +41,7 @@ GROUP(-lgcc -lc -lnosys)
 ENTRY(Reset_Handler)
 
 /* The size of the stack section at the end of CM4 SRAM */
-STACK_SIZE = 0x1000;
+STACK_SIZE = 200K;
 
 /* By default, the COMPONENT_CM0P_SLEEP prebuilt image is used for the CM0p core.
 * More about CM0+ prebuilt images, see here:
@@ -315,8 +315,16 @@ SECTIONS
         __end__ = .;
         end = __end__;
         KEEP(*(.heap*))
-        . = ORIGIN(ram) + LENGTH(ram) - STACK_SIZE;
+        . = ORIGIN(ram) + LENGTH(ram) - STACK_SIZE - STACK_SIZE;
         __HeapLimit = .;
+    } > ram
+
+    ._threadx_heap (NOLOAD):
+    {
+        . = ALIGN(4);
+        __RAM_segment_used_end__ = .;
+        . = . + STACK_SIZE;
+        . = ALIGN(4);
     } > ram
 
 

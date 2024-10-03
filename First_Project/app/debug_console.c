@@ -6,6 +6,9 @@ static cyhal_uart_t debug_uart;
 static uint8_t      rx_buf[DEBUG_MAX_BUF_LENGTH];
 static uint8_t      tx_buf[DEBUG_MAX_BUF_LENGTH];
 
+static TX_MUTEX         debug_mutex;
+static volatile uint8_t use_mutex = 0;
+
 void debug_console_init(void) {
 	cy_rslt_t              rslt        = 0;
 	const cyhal_uart_cfg_t uart_config = {
@@ -25,6 +28,13 @@ void debug_console_init(void) {
 	}
 }
 
+void debug_console_init_mutex(void) {
+	UINT status = tx_mutex_create(&debug_mutex, "Debug Console Mutex", TX_INHERIT);
+	if (status == TX_SUCCESS) {
+		use_mutex = 1;
+	}
+}
+
 // int _write(int fd, char *ptr, int len) {
 // 	(void)fd;
 // 	SEGGER_RTT_Write(0, (char *)ptr, len);
@@ -33,19 +43,22 @@ void debug_console_init(void) {
 
 int _write(int fd, char *ptr, int len) {
 	(void)fd;
-	size_t    sz     = len;
-	cy_rslt_t status = CY_RSLT_SUCCESS;
-	status           = cyhal_uart_write(&debug_uart, (void *)ptr, &sz);
-	if (status == CY_RSLT_SUCCESS) {
-		return len;
+	size_t sz = len;
+	if (use_mutex) {
+		UINT status = tx_mutex_get(&debug_mutex, DEBUG_CONSOLE_MUTEX_WAIT);
+		if (status == TX_SUCCESS) {
+			cyhal_uart_write(&debug_uart, (void *)ptr, &sz);
+			tx_mutex_put(&debug_mutex);
+		} // If we can't take the mutex we just drop the message
 	} else {
-		return 0;
+		cyhal_uart_write(&debug_uart, (void *)ptr, &sz);
 	}
+	return sz;
 }
 
 void __LOG_printf(const char *func, int line, const char *fmt, ...) {
 	int len = 0;
-	len     = snprintf((char *)tx_buf, sizeof(tx_buf), "%s (%i):", func, line);
+	len     = snprintf((char *)tx_buf, sizeof(tx_buf), "(%s:%i) ", func, line);
 	va_list args;
 	va_start(args, fmt);
 	len += vsnprintf((char *)tx_buf + len, sizeof(tx_buf) - len, fmt, args);

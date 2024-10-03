@@ -73,6 +73,7 @@
                 "-t",
                 "cy8c624abzi-d44"
             ],
+            // "rtos": "ThreadX",
             "postLaunchCommands": [
                 "set substitute-path /code/sdk ../mtb_shared",
                 "set substitute-path /code/ ."

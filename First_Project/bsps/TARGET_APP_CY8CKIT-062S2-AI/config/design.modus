@@ -683,8 +683,8 @@
                 <Personality template="altsystick" version="3.0">
                     <Block location="srss[0].clock[0].altsystickclk[0]" locked="true"/>
                     <Parameters>
-                        <Param id="interval" value="0"/>
-                        <Param id="sourceClock" value="lfclk"/>
+                        <Param id="interval" value="1000"/>
+                        <Param id="sourceClock" value="timerclk"/>
                     </Parameters>
                 </Personality>
                 <Personality template="bakclk" version="3.0">

@@ -4,8 +4,9 @@
 #include "cyhal.h"
 #include "cybsp.h"
 
-#include "debug_console.h"
+#include "tx_user.h"
+#include "tx_api.h"
 
-#define LOG_INFO(format, ...) __LOG_printf(__FUNCTION__, __LINE__, format, ##__VA_ARGS__)
+#include "debug_console.h"
 
 #endif

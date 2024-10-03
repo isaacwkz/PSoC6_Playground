@@ -7,7 +7,7 @@ set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 
 set(CMAKE_ASM_FLAGS "-mcpu=cortex-m4 -mthumb")
 # Prod
-# set(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -Wall --specs=nano.specs -ffunction-sections -fdata-sections -ffat-lto-objects -pipe -Og -g")
+# set(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -Wall --specs=nano.specs -ffunction-sections -fdata-sections -ffat-lto-objects -pipe -O2 -g")
 # Debug
 set(CMAKE_C_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -Wall -Wextra --specs=nano.specs -ffunction-sections -fdata-sections -ffat-lto-objects -pipe -Og -g")
 
@@ -91,6 +91,10 @@ list(REMOVE_ITEM SOURCES
 )
 
 add_executable(${PROJECT_NAME}.elf ${SOURCES})
+
+# Add subdirectory for threadx
+add_subdirectory(${CMAKE_SOURCE_DIR}/deps)
+target_link_libraries(${PROJECT_NAME}.elf threadx_lib)
 
 target_include_directories(${PROJECT_NAME}.elf PUBLIC
         ${PROJECT_INC_DIRS}

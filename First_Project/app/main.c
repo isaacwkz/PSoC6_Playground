@@ -62,11 +62,18 @@ uint8_t uart_read_value;
 /* Timer object used for blinking the LED */
 cyhal_timer_t led_blink_timer;
 
+TX_THREAD    thread_0;
+TX_THREAD    thread_1;
+TX_BYTE_POOL byte_pool_0;
+#define DEMO_BYTE_POOL_SIZE 9120
+UCHAR memory_area[DEMO_BYTE_POOL_SIZE];
+#define DEMO_STACK_SIZE (1024)
+
 /*******************************************************************************
  * Function Prototypes
  *******************************************************************************/
-void        timer_init(void);
-static void isr_timer(void *callback_arg, cyhal_timer_event_t event);
+void thread_0_entry(ULONG thread_input);
+void thread_1_entry(ULONG thread_input);
 
 /*******************************************************************************
  * Function Name: main
@@ -114,106 +121,67 @@ int main(void) {
 
 	/* Initialize the User LED */
 	result = cyhal_gpio_init(CYBSP_USER_LED, CYHAL_GPIO_DIR_OUTPUT, CYHAL_GPIO_DRIVE_STRONG, CYBSP_LED_STATE_OFF);
+	cyhal_gpio_write(CYBSP_USER_LED, false);
+	/* GPIO init failed. Stop program execution */
+	if (result != CY_RSLT_SUCCESS) {
+		CY_ASSERT(0);
+	}
 
 	debug_console_init();
 
 	/* Enable global interrupts */
 	__enable_irq();
 
-	/* GPIO init failed. Stop program execution */
-	if (result != CY_RSLT_SUCCESS) {
-		CY_ASSERT(0);
-	}
-
-	/* Initialize timer to toggle the LED */
-	timer_init();
+	tx_kernel_enter();
 
 	for (;;) {
-		/* Check if timer elapsed (interrupt fired) and toggle the LED */
-		if (timer_interrupt_flag) {
-			/* Clear the flag */
-			timer_interrupt_flag = false;
-			LOG_INFO("Triggered!\n\r");
-			/* Invert the USER LED state */
-			cyhal_gpio_toggle(CYBSP_USER_LED);
-		}
+		LOG_INFO("Kernel did not start!\n\r");
+		cyhal_gpio_toggle(CYBSP_USER_LED);
+		cyhal_system_delay_ms(250);
 	}
 }
 
-/*******************************************************************************
- * Function Name: timer_init
- ********************************************************************************
- * Summary:
- * This function creates and configures a Timer object. The timer ticks
- * continuously and produces a periodic interrupt on every terminal count
- * event. The period is defined by the 'period' and 'compare_value' of the
- * timer configuration structure 'led_blink_timer_cfg'. Without any changes,
- * this application is designed to produce an interrupt every 1 second.
- *
- * Parameters:
- *  none
- *
- * Return :
- *  void
- *
- *******************************************************************************/
-void timer_init(void) {
-	cy_rslt_t result;
+void tx_application_define(void *first_unused_memory) {
+	(void)first_unused_memory;
+	CHAR *pointer = TX_NULL;
+	/* Create a byte memory pool from which to allocate the thread stacks.  */
+	tx_byte_pool_create(&byte_pool_0, "byte pool 0", memory_area, DEMO_BYTE_POOL_SIZE);
+	/* Allocate the stack for thread 0.  */
+	tx_byte_allocate(&byte_pool_0, (VOID **)&pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
+	/* Create the main thread.  */
+	tx_thread_create(
+		&thread_0, "thread 0", thread_0_entry, 0, pointer, DEMO_STACK_SIZE, 1, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
+	/* Allocate the stack for thread 0.  */
+	tx_byte_allocate(&byte_pool_0, (VOID **)&pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
+	/* Create the main thread.  */
+	tx_thread_create(
+		&thread_1, "thread 1", thread_1_entry, 0, pointer, DEMO_STACK_SIZE, 1, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
 
-	const cyhal_timer_cfg_t led_blink_timer_cfg = {
-		.compare_value = 0,                      /* Timer compare value, not used */
-		.period        = LED_BLINK_TIMER_PERIOD, /* Defines the timer period */
-		.direction     = CYHAL_TIMER_DIR_UP,     /* Timer counts up */
-		.is_compare    = false,                  /* Don't use compare mode */
-		.is_continuous = true,                   /* Run timer indefinitely */
-		.value         = 0                       /* Initial value of counter */
-	};
-
-	/* Initialize the timer object. Does not use input pin ('pin' is NC) and
-	 * does not use a pre-configured clock source ('clk' is NULL). */
-	result = cyhal_timer_init(&led_blink_timer, NC, NULL);
-
-	/* timer init failed. Stop program execution */
-	if (result != CY_RSLT_SUCCESS) {
-		CY_ASSERT(0);
-	}
-
-	/* Configure timer period and operation mode such as count direction,
-	   duration */
-	cyhal_timer_configure(&led_blink_timer, &led_blink_timer_cfg);
-
-	/* Set the frequency of timer's clock source */
-	cyhal_timer_set_frequency(&led_blink_timer, LED_BLINK_TIMER_CLOCK_HZ);
-
-	/* Assign the ISR to execute on timer interrupt */
-	cyhal_timer_register_callback(&led_blink_timer, isr_timer, NULL);
-
-	/* Set the event on which timer interrupt occurs and enable it */
-	cyhal_timer_enable_event(&led_blink_timer, CYHAL_TIMER_IRQ_TERMINAL_COUNT, 7, true);
-
-	/* Start the timer with the configured settings */
-	cyhal_timer_start(&led_blink_timer);
+	debug_console_init_mutex();
 }
 
-/*******************************************************************************
- * Function Name: isr_timer
- ********************************************************************************
- * Summary:
- * This is the interrupt handler function for the timer interrupt.
- *
- * Parameters:
- *    callback_arg    Arguments passed to the interrupt callback
- *    event            Timer/counter interrupt triggers
- *
- * Return:
- *  void
- *******************************************************************************/
-static void isr_timer(void *callback_arg, cyhal_timer_event_t event) {
-	(void)callback_arg;
-	(void)event;
+static volatile uint8_t bruh = 0;
 
-	/* Set the interrupt flag and process it from the main while(1) loop */
-	timer_interrupt_flag = true;
+void thread_0_entry(ULONG thread_input) {
+	(void)thread_input;
+
+	while (1) {
+		bruh += 1;
+		LOG_INFO("ABCDEFGHIJ\n\r");
+		cyhal_gpio_toggle(CYBSP_USER_LED);
+		tx_thread_sleep(1);
+	}
+}
+
+void thread_1_entry(ULONG thread_input) {
+	(void)thread_input;
+
+	while (1) {
+		bruh += 1;
+		LOG_INFO("1234567890!\n\r");
+		cyhal_gpio_toggle(CYBSP_USER_LED);
+		tx_thread_sleep(2);
+	}
 }
 
 /* [] END OF FILE */
