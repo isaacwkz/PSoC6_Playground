@@ -51,7 +51,7 @@
 #define CY_CFG_SYSCLK_FLL_REFDIV 20U
 #define CY_CFG_SYSCLK_FLL_CCO_RANGE CY_SYSCLK_FLL_CCO_RANGE4
 #define CY_CFG_SYSCLK_FLL_ENABLE_OUTDIV true
-#define CY_CFG_SYSCLK_FLL_LOCK_TOLERANCE 10U
+#define CY_CFG_SYSCLK_FLL_LOCK_TOLERANCE 4U
 #define CY_CFG_SYSCLK_FLL_IGAIN 9U
 #define CY_CFG_SYSCLK_FLL_PGAIN 5U
 #define CY_CFG_SYSCLK_FLL_SETTLING_COUNT 8U
@@ -127,7 +127,7 @@ static const cy_stc_fll_manual_config_t srss_0_clock_0_fll_0_fllConfig =
     .refDiv = 20U,
     .ccoRange = CY_SYSCLK_FLL_CCO_RANGE4,
     .enableOutputDiv = true,
-    .lockTolerance = 10U,
+    .lockTolerance = 4U,
     .igain = 9U,
     .pgain = 5U,
     .settlingCount = 8U,

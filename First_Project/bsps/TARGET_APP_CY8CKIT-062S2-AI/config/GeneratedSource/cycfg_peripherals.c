@@ -213,6 +213,15 @@ const cyhal_uart_configurator_t scb_5_hal_config =
 };
 #endif /* defined (CY_USING_HAL) || defined(CY_USING_HAL_LITE) */
 
+#if defined (CY_USING_HAL)
+const cyhal_resource_inst_t usb_0_obj =
+{
+    .type = CYHAL_RSC_USB,
+    .block_num = 0U,
+    .channel_num = 0U,
+};
+#endif /* defined (CY_USING_HAL) */
+
 void init_cycfg_peripherals(void)
 {
     SAR_MUX_SWITCH0(pass_0_sar_0_HW) |= CY_SAR_MUX_FW_VSSA_VMINUS;
@@ -220,6 +229,7 @@ void init_cycfg_peripherals(void)
     Cy_SysClk_PeriphAssignDivider(PCLK_PASS_CLOCK_SAR, CY_SYSCLK_DIV_8_BIT, 1U);
     Cy_SysClk_PeriphAssignDivider(PCLK_SCB1_CLOCK, CY_SYSCLK_DIV_8_BIT, 2U);
     Cy_SysClk_PeriphAssignDivider(PCLK_SCB5_CLOCK, CY_SYSCLK_DIV_8_BIT, 0U);
+    Cy_SysClk_PeriphAssignDivider(PCLK_USB_CLOCK_DEV_BRS, CY_SYSCLK_DIV_16_BIT, 0U);
 }
 void reserve_cycfg_peripherals(void)
 {
@@ -227,5 +237,6 @@ void reserve_cycfg_peripherals(void)
     cyhal_hwmgr_reserve(&pass_0_sar_0_obj);
     cyhal_hwmgr_reserve(&scb_1_obj);
     cyhal_hwmgr_reserve(&scb_5_obj);
+    cyhal_hwmgr_reserve(&usb_0_obj);
 #endif /* defined (CY_USING_HAL) */
 }

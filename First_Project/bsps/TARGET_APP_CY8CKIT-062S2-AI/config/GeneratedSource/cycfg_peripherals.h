@@ -63,6 +63,31 @@ extern "C" {
 #define scb_5_ENABLED 1U
 #define scb_5_HW SCB5
 #define scb_5_IRQ scb_5_interrupt_IRQn
+#define usb_0_ENABLED 1U
+#define USBD_DMA_CHANNEL_PRIORITY_EP0 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP1 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP2 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP3 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP4 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP5 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP6 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP7 3U
+#define USBD_DMA_CHANNEL_ADDRESS_EP0 DW0_CH_STRUCT8
+#define USBD_DMA_CHANNEL_ADDRESS_EP1 DW0_CH_STRUCT9
+#define USBD_DMA_CHANNEL_ADDRESS_EP2 DW0_CH_STRUCT10
+#define USBD_DMA_CHANNEL_ADDRESS_EP3 DW0_CH_STRUCT11
+#define USBD_DMA_CHANNEL_ADDRESS_EP4 DW0_CH_STRUCT12
+#define USBD_DMA_CHANNEL_ADDRESS_EP5 DW0_CH_STRUCT13
+#define USBD_DMA_CHANNEL_ADDRESS_EP6 DW0_CH_STRUCT14
+#define USBD_DMA_CHANNEL_ADDRESS_EP7 DW0_CH_STRUCT15
+#define USBD_DMA_OUT_TRIG_MUX_EP0 usb_0_dma_burstend_0_TRIGGER_OUT
+#define USBD_DMA_OUT_TRIG_MUX_EP1 usb_0_dma_burstend_1_TRIGGER_OUT
+#define USBD_DMA_OUT_TRIG_MUX_EP2 usb_0_dma_burstend_2_TRIGGER_OUT
+#define USBD_DMA_OUT_TRIG_MUX_EP3 usb_0_dma_burstend_3_TRIGGER_OUT
+#define USBD_DMA_OUT_TRIG_MUX_EP4 usb_0_dma_burstend_4_TRIGGER_OUT
+#define USBD_DMA_OUT_TRIG_MUX_EP5 usb_0_dma_burstend_5_TRIGGER_OUT
+#define USBD_DMA_OUT_TRIG_MUX_EP6 usb_0_dma_burstend_6_TRIGGER_OUT
+#define USBD_DMA_OUT_TRIG_MUX_EP7 usb_0_dma_burstend_7_TRIGGER_OUT
 
 extern const cy_stc_sysanalog_config_t pass_0_aref_0_config;
 extern const cy_stc_sar_config_t pass_0_sar_0_config;
@@ -106,6 +131,10 @@ extern const cyhal_clock_t scb_5_clock;
 #if defined (CY_USING_HAL) || defined(CY_USING_HAL_LITE)
 extern const cyhal_uart_configurator_t scb_5_hal_config;
 #endif /* defined (CY_USING_HAL) || defined(CY_USING_HAL_LITE) */
+
+#if defined (CY_USING_HAL)
+extern const cyhal_resource_inst_t usb_0_obj;
+#endif /* defined (CY_USING_HAL) */
 
 void init_cycfg_peripherals(void);
 void reserve_cycfg_peripherals(void);

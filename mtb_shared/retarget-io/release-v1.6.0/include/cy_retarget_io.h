@@ -63,7 +63,7 @@ extern cyhal_uart_t cy_retarget_io_uart_obj;
 #endif
 
 /** UART baud rate */
-#define CY_RETARGET_IO_BAUDRATE             (500000)
+#define CY_RETARGET_IO_BAUDRATE             (115200)
 
 #if defined(CY_USING_HAL)
 /**

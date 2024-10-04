@@ -46,6 +46,7 @@ void cycfg_config_init(void)
 void cycfg_config_reservations(void)
 {
     reserve_cycfg_clocks();
+    reserve_cycfg_dmas();
     reserve_cycfg_peripherals();
     reserve_cycfg_pins();
 }
