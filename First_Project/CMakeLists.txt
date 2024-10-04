@@ -18,7 +18,8 @@ set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/bsps/TARGET_APP_CY8CKIT-062S2-AI/COMPONENT
 set(CMAKE_EXE_LINKER_FLAGS "-T ${LINKER_SCRIPT}")
 
 # Add compile definitions globally
-add_compile_definitions(CY8C624ABZI_S2D44 COMPONENT_CAT1 COMPONENT_CAT1A CY_USING_HAL COMPONENT_CM0P_SLEEP COMPONENT_CM4 COMPONENT_CM4_0 COMPONENT_MW_CAT1CM0P COMPONENT_PSOC6_02)
+add_compile_definitions(CY8C624ABZI_S2D44 CORE_NAME_CM4_0 COMPONENT_CAT1 COMPONENT_CAT1A CY_USING_HAL COMPONENT_CM0P_SLEEP COMPONENT_CM4 COMPONENT_CM4_0 COMPONENT_MW_CAT1CM0P COMPONENT_PSOC6_02 USBD_ENABLE_DMA) #COMPONENT_RTOS_AWARE)
+# add_compile_definitions(CY8C624ABZI_S2D44 CORE_NAME_CM4_0 COMPONENT_CAT1 COMPONENT_CAT1A CY_USING_HAL COMPONENT_CM0P_SLEEP COMPONENT_CM4 COMPONENT_CM4_0 COMPONENT_MW_CAT1CM0P COMPONENT_PSOC6_02 USBD_ENABLE_DMA COMPONENT_RTOS_AWARE)
 
 set(PROJECT_INC_DIRS
     ${CMAKE_SOURCE_DIR}/bsps/TARGET_APP_CY8CKIT-062S2-AI/bluetooth
@@ -35,6 +36,11 @@ set(SDK_INC_DIRS
     ${CMAKE_SOURCE_DIR}/sdk/core-lib/release-v1.4.2/include
     ${CMAKE_SOURCE_DIR}/sdk/retarget-io/release-v1.6.0/include
     ${CMAKE_SOURCE_DIR}/sdk/mtb-hal-cat1/release-v2.6.1/COMPONENT_CAT1A/include
+    ${CMAKE_SOURCE_DIR}/sdk/abstraction-rtos/release-v1.8.2/include
+    ${CMAKE_SOURCE_DIR}/sdk/abstraction-rtos/release-v1.8.2/include/COMPONENT_THREADX
+    ${CMAKE_SOURCE_DIR}/sdk/emusb-device/release-v1.4.0/USBD
+    ${CMAKE_SOURCE_DIR}/sdk/emusb-device/release-v1.4.0/USBD/COMPONENT_CAT1A
+    ${CMAKE_SOURCE_DIR}/sdk/emusb-device/release-v1.4.0/USBD/COMPONENT_USBD_BASE/COMPONENT_CAT1A/CONFIG_Release
 )
 
 set(CM0P_PRE_BUILT_INC_DIRS
@@ -44,8 +50,6 @@ set(CM0P_PRE_BUILT_INC_DIRS
 set(APP_INC_DIRS
     ${CMAKE_SOURCE_DIR}/app
 )
-
-include_directories(${PROJECT_INC_DIRS} ${SDK_INC_DIRS} ${CM0P_PRE_BUILT_INC_DIRS})
 
 # Set the source directories and file patterns
 set(PROJECT_SRC_FILES
@@ -66,6 +70,14 @@ set(SDK_SRC_DIRS
     ${CMAKE_SOURCE_DIR}/sdk/mtb-hal-cat1/release-v2.6.1/COMPONENT_CAT1A/source/pin_packages/cyhal_psoc6_02_124_bga.c
     ${CMAKE_SOURCE_DIR}/sdk/mtb-hal-cat1/release-v2.6.1/COMPONENT_CAT1A/source/triggers/cyhal_triggers_psoc6_02.c
     ${CMAKE_SOURCE_DIR}/sdk/mtb-pdl-cat1/release-v3.12.0/drivers/source/TOOLCHAIN_GCC_ARM/cy_syslib_ext.S
+    ${CMAKE_SOURCE_DIR}/sdk/abstraction-rtos/release-v1.8.2/source/COMPONENT_THREADX/cyabs_rtos_threadx.c
+    ${CMAKE_SOURCE_DIR}/sdk/abstraction-rtos/release-v1.8.2/source/cy_worker_thread.c
+    ${CMAKE_SOURCE_DIR}/sdk/emusb-device/release-v1.4.0/OS/usbd_os_abs_rtos.c
+)
+
+set(IMPORTED_LIB_SRC_DIRS
+    ${CMAKE_SOURCE_DIR}/imports/emusb-device/Config/COMPONENT_CAT1A/usbd_config.c
+    ${CMAKE_SOURCE_DIR}/imports/emusb-device/Config/usbd_config_io.c
 )
 
 set(CM0P_PRE_BUILT_SRC_DIRS
@@ -77,23 +89,32 @@ set(APP_SRC_FILE
     ${CMAKE_SOURCE_DIR}/app/*.c
 )
 
+set(EMUSB_BINARY_LIB
+    # Prod version
+    # ${CMAKE_SOURCE_DIR}/sdk/emusb-device/release-v1.4.0/USBD/COMPONENT_USBD_BASE/COMPONENT_CAT1A/CONFIG_Release/COMPONENT_CM4/COMPONENT_SOFTFP/TOOLCHAIN_GCC_ARM/libusbd_base_r_cm4_gcc.a
+    # Debug version
+    ${CMAKE_SOURCE_DIR}/sdk/emusb-device/release-v1.4.0/USBD/COMPONENT_USBD_BASE/COMPONENT_CAT1A/CONFIG_Debug/COMPONENT_CM4/COMPONENT_SOFTFP/TOOLCHAIN_GCC_ARM/libusbd_base_d_cm4_gcc.a
+)
+
 # Collect all sources using glob
 file(GLOB_RECURSE SOURCES 
     ${PROJECT_SRC_FILES} 
     ${SDK_SRC_DIRS} 
     ${CM0P_PRE_BUILT_SRC_DIRS} 
     ${APP_SRC_FILE}
+    ${IMPORTED_LIB_SRC_DIRS}
 )
 
 add_executable(${PROJECT_NAME}.elf ${SOURCES})
 
 # Add subdirectory for threadx
 add_subdirectory(${CMAKE_SOURCE_DIR}/deps)
-target_link_libraries(${PROJECT_NAME}.elf threadx_lib rtt_lib)
-
+target_link_libraries(${PROJECT_NAME}.elf PUBLIC threadx_lib rtt_lib ${EMUSB_BINARY_LIB})
 target_include_directories(${PROJECT_NAME}.elf PUBLIC
         ${PROJECT_INC_DIRS}
-        ${SDK_INC_DIRS}
+        ${SDK_INC_DIRS} 
+        ${CM0P_PRE_BUILT_INC_DIRS} 
+        ${APP_INC_DIRS}
 )
 target_link_options(${PROJECT_NAME}.elf PRIVATE "LINKER:--gc-sections,-print-memory-usage,--sort-section=alignment")
 

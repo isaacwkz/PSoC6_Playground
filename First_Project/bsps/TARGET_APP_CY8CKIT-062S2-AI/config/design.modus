@@ -1151,7 +1151,7 @@
                     <Block location="peri[0].div_8[0]" locked="true"/>
                     <Parameters>
                         <Param id="fracDivider" value="0"/>
-                        <Param id="intDivider" value="36"/>
+                        <Param id="intDivider" value="9"/>
                         <Param id="startOnReset" value="true"/>
                     </Parameters>
                 </Personality>
@@ -1167,7 +1167,7 @@
                     <Block location="peri[0].div_8[2]" locked="true"/>
                     <Parameters>
                         <Param id="fracDivider" value="0"/>
-                        <Param id="intDivider" value="18"/>
+                        <Param id="intDivider" value="9"/>
                         <Param id="startOnReset" value="true"/>
                     </Parameters>
                 </Personality>
@@ -1195,7 +1195,7 @@
                     <Block location="scb[1]" locked="true"/>
                     <Parameters>
                         <Param id="ApiMode" value="HIGH_LEVEL"/>
-                        <Param id="BaudRate" value="500000"/>
+                        <Param id="BaudRate" value="1000000"/>
                         <Param id="BitsOrder" value="CY_SCB_UART_LSB_FIRST"/>
                         <Param id="BreakLevel" value="0"/>
                         <Param id="BreakSignalBits" value="11"/>
@@ -1245,7 +1245,7 @@
                     <Block location="scb[5]" locked="true"/>
                     <Parameters>
                         <Param id="ApiMode" value="HIGH_LEVEL"/>
-                        <Param id="BaudRate" value="250000"/>
+                        <Param id="BaudRate" value="1000000"/>
                         <Param id="BitsOrder" value="CY_SCB_UART_LSB_FIRST"/>
                         <Param id="BreakLevel" value="0"/>
                         <Param id="BreakSignalBits" value="11"/>

@@ -41,6 +41,8 @@
 
 #include "common.h"
 
+#include "usb_device.h"
+
 /*******************************************************************************
  * Macros
  *******************************************************************************/
@@ -104,6 +106,8 @@ int main(void) {
 
 	/* Enable global interrupts */
 	__enable_irq();
+
+	usb_stack_init();
 
 	tx_kernel_enter();
 

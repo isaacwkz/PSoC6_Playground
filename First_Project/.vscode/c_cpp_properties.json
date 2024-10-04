@@ -49,7 +49,11 @@
             "../mtb_shared/mtb-pdl-cat1/release-v3.12.0/drivers",
             "../mtb_shared/mtb-pdl-cat1/release-v3.12.0/drivers/third_party/ethernet/include",
             "../mtb_shared/mtb-pdl-cat1/release-v3.12.0/drivers/third_party/ethernet",
-            "../mtb_shared/mtb-pdl-cat1/release-v3.12.0/drivers/third_party"
+            "../mtb_shared/mtb-pdl-cat1/release-v3.12.0/drivers/third_party",
+            "../mtb_shared/emusb-device/release-v1.4.0/USBD/",
+            "../mtb_shared/emusb-device/release-v1.4.0/USBD/COMPONENT_CAT1A",
+            "../mtb_shared/emusb-device/release-v1.4.0/USBD/COMPONENT_USBD_BASE/COMPONENT_CAT1A/CONFIG_Debug",
+            "../mtb_shared/emusb-device/release-v1.4.0/USBD/COMPONENT_USBD_BASE/COMPONENT_CAT1A/CONFIG_Release"
         ],
         "mtbDefaultDefines": [
             "COMPONENT_43439",
