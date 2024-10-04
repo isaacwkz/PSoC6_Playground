@@ -44,24 +44,10 @@
 /*******************************************************************************
  * Macros
  *******************************************************************************/
-/* LED blink timer clock value in Hz  */
-#define LED_BLINK_TIMER_CLOCK_HZ (10000)
-
-/* LED blink timer period value */
-#define LED_BLINK_TIMER_PERIOD (1000)
 
 /*******************************************************************************
  * Global Variables
  *******************************************************************************/
-bool timer_interrupt_flag  = false;
-bool led_blink_active_flag = true;
-
-/* Variable for storing character read from terminal */
-uint8_t uart_read_value;
-
-/* Timer object used for blinking the LED */
-cyhal_timer_t led_blink_timer;
-
 TX_THREAD    thread_0;
 TX_THREAD    thread_1;
 TX_BYTE_POOL byte_pool_0;
@@ -78,14 +64,6 @@ void thread_1_entry(ULONG thread_input);
 /*******************************************************************************
  * Function Name: main
  ********************************************************************************
- * Summary:
- * This is the main function. It sets up a timer to trigger a periodic interrupt.
- * The main while loop checks for the status of a flag set by the interrupt and
- * toggles an LED at 1Hz to create an LED blinky. Will be achieving the 1Hz Blink
- * rate based on the The LED_BLINK_TIMER_CLOCK_HZ and LED_BLINK_TIMER_PERIOD
- * Macros,i.e. (LED_BLINK_TIMER_PERIOD + 1) / LED_BLINK_TIMER_CLOCK_HZ = X ,Here,
- * X denotes the desired blink rate. The while loop also checks whether the
- * 'Enter' key was pressed and stops/restarts LED blinking.
  *
  * Parameters:
  *  none
@@ -113,11 +91,6 @@ int main(void) {
 	if (result != CY_RSLT_SUCCESS) {
 		CY_ASSERT(0);
 	}
-
-	init_cycfg_pins();
-	reserve_cycfg_pins();
-	init_cycfg_peripherals();
-	reserve_cycfg_peripherals();
 
 	/* Initialize the User LED */
 	result = cyhal_gpio_init(CYBSP_USER_LED, CYHAL_GPIO_DIR_OUTPUT, CYHAL_GPIO_DRIVE_STRONG, CYBSP_LED_STATE_OFF);
