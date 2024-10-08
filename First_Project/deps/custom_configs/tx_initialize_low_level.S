@@ -27,7 +27,7 @@
     .global     __main
     .global     __tx_SVCallHandler
     .global     __tx_PendSVHandler
-    .global     __Vectors
+    .global     __ramVectors
     .global     __tx_NMIHandler                     @ NMI
     .global     __tx_BadHandler                     @ HardFault
     .global     __tx_SVCallHandler                  @ SVCall
@@ -38,7 +38,7 @@
 @
 @
 
-SYSTEM_CLOCK        =   8000000
+SYSTEM_CLOCK        =   144000000
 TX_TICK_RATE        =   1000
 SYSTICK_CYCLES      =   ((SYSTEM_CLOCK / TX_TICK_RATE) -1)
 
@@ -108,18 +108,29 @@ _tx_initialize_low_level:
     ADD     r1, r1, #4                              @
     STR     r1, [r0]                                @ Setup first unused memory pointer
 @
-@    /* Setup Vector Table Offset Register.  */
+@   /* Setup Vector Table Offset Register.  */
 @
     MOV     r0, #0xE000E000                         @ Build address of NVIC registers
-    LDR     r1, =__Vectors                          @ Pickup address of vector table
+    LDR     r1, =__ramVectors                          @ Pickup address of vector table
     STR     r1, [r0, #0xD08]                        @ Set vector table address
 @
-@    /* Set system stack pointer from vector value.  */
+@    LDR     r0, =0x40200000                         @ Load address into r0 using a literal pool
+@    LDR     r1, [r0, #0x200]                        @ Read the current vector table address from CM4_VECTOR_TABLE_BASE
+@    // r1 stores the pointer
+@    MOV     r0, #0xE000E000                         @ Build address of NVIC registers
+@    STR     r1, [r0, #0xD08]                        @ Set vector table address
+@
+@   /* Set system stack pointer from vector value.  */
 @
     LDR     r0, =_tx_thread_system_stack_ptr        @ Build address of system stack pointer
-    LDR     r1, =__Vectors                          @ Pickup address of vector table
-    LDR     r1, [r1]                                @ Pickup reset stack pointer
+    LDR     r1, =__ramVectors                          @ Pickup address of vector table
+    @LDR     r1, [r1]                                @ Pickup reset stack pointer
     STR     r1, [r0]                                @ Save system stack pointer
+@
+@   /* Set system stack pointer from vector value.  */
+#   LDR     r0, =_tx_thread_system_stack_ptr        @ Address of system stack pointer
+#   @LDR   r2, [r1]                                @ Pickup reset stack pointer from current vector table
+#   STR     r1, [r0]                                @ Save system stack pointer
 @
 @    /* Enable the cycle count register.  */
 @
