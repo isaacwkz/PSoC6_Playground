@@ -60,6 +60,7 @@ Purpose     : emUSB-Device configuration file for CAT1A device
 #include "USB.h"
 #include "USB_HW_Cypress_PSoC6.h"
 #include "cybsp.h"
+#include "cy_retarget_io.h"
 #if defined(USBD_USE_PDL) && (USBD_USE_PDL == 1U)
 #include "cy_pdl.h"
 #else
@@ -67,11 +68,11 @@ Purpose     : emUSB-Device configuration file for CAT1A device
 #endif /* #if defined (USBD_USE_PDL) && (USBD_USE_PDL == 1U) */
 
 /* Define interrupt priority */
-#define USBD_ISR_PRIO (3U)
+#define USBD_ISR_PRIO (0U)
 
 /*  Use the driver with DMA support. Can be defined in Makefile */
 #if !defined(USBD_ENABLE_DMA)
-#define USBD_ENABLE_DMA (true)
+#define USBD_ENABLE_DMA (false)
 #endif /* #if !defined (USBD_ENABLE_DMA) */
 
 /* Define interrupt source */
@@ -85,6 +86,30 @@ Purpose     : emUSB-Device configuration file for CAT1A device
 #endif /* #if (COMPONENT_CM0P) */
 
 #if USBD_ENABLE_DMA == true
+#define USBD_DMA_CHANNEL_PRIORITY_EP0 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP1 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP2 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP3 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP4 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP5 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP6 3U
+#define USBD_DMA_CHANNEL_PRIORITY_EP7 3U
+#define USBD_DMA_CHANNEL_ADDRESS_EP0  DW0_CH_STRUCT8
+#define USBD_DMA_CHANNEL_ADDRESS_EP1  DW0_CH_STRUCT9
+#define USBD_DMA_CHANNEL_ADDRESS_EP2  DW0_CH_STRUCT10
+#define USBD_DMA_CHANNEL_ADDRESS_EP3  DW0_CH_STRUCT11
+#define USBD_DMA_CHANNEL_ADDRESS_EP4  DW0_CH_STRUCT12
+#define USBD_DMA_CHANNEL_ADDRESS_EP5  DW0_CH_STRUCT13
+#define USBD_DMA_CHANNEL_ADDRESS_EP6  DW0_CH_STRUCT14
+#define USBD_DMA_CHANNEL_ADDRESS_EP7  DW0_CH_STRUCT15
+#define USBD_DMA_OUT_TRIG_MUX_EP0     TRIG_OUT_1TO1_6_PDMA0_TR_OUT8_TO_USB_ACK0
+#define USBD_DMA_OUT_TRIG_MUX_EP1     TRIG_OUT_1TO1_6_PDMA0_TR_OUT9_TO_USB_ACK1
+#define USBD_DMA_OUT_TRIG_MUX_EP2     TRIG_OUT_1TO1_6_PDMA0_TR_OUT10_TO_USB_ACK2
+#define USBD_DMA_OUT_TRIG_MUX_EP3     TRIG_OUT_1TO1_6_PDMA0_TR_OUT11_TO_USB_ACK3
+#define USBD_DMA_OUT_TRIG_MUX_EP4     TRIG_OUT_1TO1_6_PDMA0_TR_OUT12_TO_USB_ACK4
+#define USBD_DMA_OUT_TRIG_MUX_EP5     TRIG_OUT_1TO1_6_PDMA0_TR_OUT13_TO_USB_ACK5
+#define USBD_DMA_OUT_TRIG_MUX_EP6     TRIG_OUT_1TO1_6_PDMA0_TR_OUT14_TO_USB_ACK6
+#define USBD_DMA_OUT_TRIG_MUX_EP7     TRIG_OUT_1TO1_6_PDMA0_TR_OUT15_TO_USB_ACK7
 
 /* Define the size of memory dedicated for drivers with DMA in
  * bytes. The memory is used for endpoints buffers and
@@ -237,6 +262,22 @@ static U32 ep_mem_pool_dma[USBD_MEMORY_POOL_SIZE / 4U];
  */
 void USBD_X_Config(void) {
 #if USBD_ENABLE_DMA == true
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_5_USB_DMA0_TO_PDMA0_TR_IN8, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_5_USB_DMA1_TO_PDMA0_TR_IN9, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_5_USB_DMA2_TO_PDMA0_TR_IN10, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_5_USB_DMA3_TO_PDMA0_TR_IN11, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_5_USB_DMA4_TO_PDMA0_TR_IN12, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_5_USB_DMA5_TO_PDMA0_TR_IN13, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_5_USB_DMA6_TO_PDMA0_TR_IN14, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_5_USB_DMA7_TO_PDMA0_TR_IN15, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_6_PDMA0_TR_OUT10_TO_USB_ACK2, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_6_PDMA0_TR_OUT11_TO_USB_ACK3, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_6_PDMA0_TR_OUT12_TO_USB_ACK4, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_6_PDMA0_TR_OUT13_TO_USB_ACK5, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_6_PDMA0_TR_OUT14_TO_USB_ACK6, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_6_PDMA0_TR_OUT15_TO_USB_ACK7, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_6_PDMA0_TR_OUT8_TO_USB_ACK0, false, TRIGGER_TYPE_EDGE);
+	Cy_TrigMux_Select(TRIG_OUT_1TO1_6_PDMA0_TR_OUT9_TO_USB_ACK1, false, TRIGGER_TYPE_EDGE);
 	/* Enable the DMA IP block */
 	Cy_DMA_Enable(DW0);
 
@@ -245,10 +286,12 @@ void USBD_X_Config(void) {
 	USBD_AssignMemory(ep_mem_pool_dma, sizeof(ep_mem_pool_dma));
 	USB_DRIVER_Cypress_PSoC6_ConfigDMA(&USB_DRIVER_Cypress_PSoC6_DWx, &dma_config);
 #else
+	printf("Adding PSoC6 USB driver\r\n");
 	/* Add USB Driver */
 	USBD_AddDriver(&USB_Driver_Cypress_PSoC6);
 #endif /* #if USBD_ENABLE_DMA == true */
 	/* Configure interrupt */
+	printf("Configuring USB IRQ handler\r\n");
 	USBD_SetISREnableFunc(enable_isr);
 }
 

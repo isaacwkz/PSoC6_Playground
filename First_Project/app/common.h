@@ -7,6 +7,8 @@
 #include "tx_user.h"
 #include "tx_api.h"
 
+#include "USB.h"
+
 #include "debug_console.h"
 
 #endif

@@ -169,11 +169,11 @@ Purpose     : Sample implementation of log and warn function
  */
 static void _puts(const char *s) {
 #if defined(COMPONENT_RTOS_AWARE)
-	if (__get_IPSR() == 0U) {
+	// if (__get_IPSR() == 0U) {
 #endif /* #if !defined(COMPONENT_RTOS_AWARE) */
-		LOG_printf("%s", s);
+	LOG_str(s);
 #if defined(COMPONENT_RTOS_AWARE)
-	}
+//}
 #endif /* #if !defined(COMPONENT_RTOS_AWARE) */
 }
 

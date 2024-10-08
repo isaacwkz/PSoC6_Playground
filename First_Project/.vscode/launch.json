@@ -74,17 +74,17 @@
                 "cy8c624abzi-d44"
             ],
             // "rtos": "ThreadX",
-            "rttConfig": {
-                "enabled": true,
-                "address": "auto",
-                "decoders": [
-                    {
-                        "label": "",
-                        "port": 0,
-                        "type": "console"
-                    }
-                ]
-            },
+            //"rttConfig": {
+            //    "enabled": true,
+            //    "address": "auto",
+            //    "decoders": [
+            //        {
+            //            "label": "",
+            //            "port": 0,
+            //            "type": "console"
+            //        }
+            //    ]
+            //},
             "postLaunchCommands": [
                 "set substitute-path /code/sdk ../mtb_shared",
                 "set substitute-path /code/ ."
@@ -103,7 +103,7 @@
             // "overrideRestartCommands": [
             //     "starti"
             // ],
-            "postRestartSessionCommands": [],
+            //"postRestartSessionCommands": [],
             // svdFile is optional, it can be very large.
             "svdFile": "../mtb_shared/mtb-pdl-cat1/release-v3.12.0/devices/COMPONENT_CAT1A/svd/psoc6_02.svd",
             "breakAfterReset": true,

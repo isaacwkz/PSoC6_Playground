@@ -10,7 +10,8 @@ set(THREADX_INC_DIR
 set(THREADX_SRC_DIR
     ${CMAKE_SOURCE_DIR}/deps/threadx/common/src/*.c
     ${CMAKE_SOURCE_DIR}/deps/threadx/ports/cortex_m4/gnu/src/*.S
-    ${CMAKE_SOURCE_DIR}/deps/custom_configs/tx_initialize_low_level.S
+    # ${CMAKE_SOURCE_DIR}/deps/custom_configs/tx_initialize_low_level.S
+    ${CMAKE_SOURCE_DIR}/deps/custom_configs/tx_initialize_low_level.c
 )
 
 file(GLOB_RECURSE TX_SOURCES ${THREADX_SRC_DIR})
