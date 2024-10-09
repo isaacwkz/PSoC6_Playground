@@ -30,7 +30,7 @@ void _tx_initialize_low_level(void) {
 
 	// Set vector table address
 	// SCB->VTOR = __ramVectors;
-	*((volatile unsigned int *)0xE000ED08) = (void *)&__ramVectors;
+	*((volatile unsigned int *)0xE000ED08) = (unsigned int)(void *)&__ramVectors;
 	// Save system stack pointer
 	stack_ptr                   = (void *)&__ramVectors;
 	_tx_thread_system_stack_ptr = &stack_ptr;
@@ -59,7 +59,7 @@ void _tx_initialize_low_level(void) {
 	// Redirect Systick_Handler to TX implementation
 	// NVIC_SetVector(SysTick_IRQn, SysTick_Handler);
 	unsigned int *vectors        = (unsigned int *)*((volatile unsigned int *)0xE000ED08);
-	vectors[(signed int)-1 + 16] = SysTick_Handler;
+	vectors[(signed int)-1 + 16] = (unsigned int)SysTick_Handler;
 }
 
 void InterruptHandler(void) {
