@@ -36,14 +36,14 @@
             "type": "cortex-debug",
             "request": "launch",
             "cwd": "${workspaceFolder}",
-            "executable": "./bin/tx-usb.elf",
+            "executable": "./bin/radar.elf",
             "servertype": "pyocd",
             "serverArgs": [
                 "-t",
                 "cy8c624abzi-d44"
             ],
             "overrideLaunchCommands": [
-                "load ./bin/tx-usb.hex",
+                "load ./bin/radar.hex",
                 "-interpreter-exec console \"monitor writedp 0x04 0x00\"",
                 "-interpreter-exec console \"monitor reset hw\"",
             ],
@@ -61,7 +61,7 @@
         {
             "name": "Debug (PyOCD)",
             //"cwd": "${fileDirname}",
-            "executable": "./bin/tx-usb.elf",
+            "executable": "./bin/radar.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "pyocd",

@@ -8,7 +8,7 @@ RUN apt update && apt install -y \
     git
 
 # Copy the source code into the container
-COPY ./ThreadX_USB/. /code
+COPY ./Radar/. /code
 COPY ./mtb_shared /code/sdk
 
 # Create output directory
@@ -19,8 +19,8 @@ WORKDIR /code
 RUN mkdir -p out && cd out && \
     cmake .. && \
     make -j${nproc} && \
-    cp tx-usb.elf /out/tx-usb.elf && \
-    cp tx-usb.hex /out/tx-usb.hex
+    cp radar.elf /out/radar.elf && \
+    cp radar.hex /out/radar.hex
 
 # Use a second stage to minimize the final image
 FROM scratch
