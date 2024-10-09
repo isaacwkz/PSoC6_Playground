@@ -11,4 +11,8 @@
 
 #include "debug_console.h"
 
+/* Define interrupt priority */
+#define USBD_ISR_PRIO     (6U)
+#define BG_TIMER_ISR_PRIO (5U)
+
 #endif

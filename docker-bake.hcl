@@ -12,13 +12,13 @@ variable "DEST" {
 
 group "default" {
     targets = [
-        "first_project",
+        "tx_usb",
     ]
 }
 
-target "first_project" {
-    dockerfile = "docker/Dockerfile.first_project"
-    cache-from = ["type=local,src=${CACHE}/psoc6_first_project-cache"]
-    cache-to   = ["type=local,mode=max,dest=${CACHE}/psoc6_first_project-cache"]
-    output     = ["${DEST}/First_Project"]
+target "tx_usb" {
+    dockerfile = "docker/Dockerfile.tx_usb"
+    cache-from = ["type=local,src=${CACHE}/psoc6_tx_usb-cache"]
+    cache-to   = ["type=local,mode=max,dest=${CACHE}/psoc6_tx_usb-cache"]
+    output     = ["${DEST}/ThreadX_USB"]
 }

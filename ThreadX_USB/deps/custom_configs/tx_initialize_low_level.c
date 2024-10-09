@@ -18,7 +18,7 @@ void *stack_ptr;
 
 extern void _tx_timer_interrupt(void);
 
-void SysTick_Handler(void);
+static inline void SystickHandlerHelper(void);
 
 void _tx_initialize_low_level(void) {
 	// Disable all the interrupts
@@ -59,7 +59,7 @@ void _tx_initialize_low_level(void) {
 	// Redirect Systick_Handler to TX implementation
 	// NVIC_SetVector(SysTick_IRQn, SysTick_Handler);
 	unsigned int *vectors        = (unsigned int *)*((volatile unsigned int *)0xE000ED08);
-	vectors[(signed int)-1 + 16] = (unsigned int)SysTick_Handler;
+	vectors[(signed int)-1 + 16] = (unsigned int)SystickHandlerHelper;
 }
 
 void InterruptHandler(void) {
@@ -81,7 +81,6 @@ void __tx_IntHandler(void) {
 }
 
 // System Tick timer interrupt handler
-
 extern void        _tx_timer_interrupt();
 static inline void SystickHandlerHelper(void) {
 #ifdef TX_ENABLE_EXECUTION_CHANGE_NOTIFY
@@ -94,32 +93,4 @@ static inline void SystickHandlerHelper(void) {
 #ifdef TX_ENABLE_EXECUTION_CHANGE_NOTIFY
 	_tx_execution_isr_exit();
 #endif
-}
-
-void __tx_SysTickHandler(void) { SystickHandlerHelper(); }
-void SysTick_Handler(void) { SystickHandlerHelper(); }
-
-void __tx_BadHandler(void) {
-	while (1) {
-	}
-}
-
-void __tx_HardfaultHandler(void) {
-	while (1) {
-	}
-}
-
-void __tx_SVCallHandler(void) {
-	while (1) {
-	}
-}
-
-void __tx_NMIHandler(void) {
-	while (1) {
-	}
-}
-
-void __tx_DBGHandler(void) {
-	while (1) {
-	}
 }

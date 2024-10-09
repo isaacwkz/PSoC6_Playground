@@ -10,7 +10,7 @@
             "args": [
                 "--norc",
                 "-c",
-                "cd .. && docker buildx bake first_project --progress=plain"
+                "cd .. && docker buildx bake tx_usb --progress=plain"
             ],
             "group": {
                 "kind": "build",

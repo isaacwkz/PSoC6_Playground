@@ -9,7 +9,7 @@
 // 2 - UART1 (J15 header)
 // 3 - RTT
 // Any other value defaults to no output
-#define DEBUG_OUTPUT_SINK 4
+#define DEBUG_OUTPUT_SINK 3
 
 #define DEBUG_CONSOLE_MUTEX_WAIT 5
 

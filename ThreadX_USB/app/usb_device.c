@@ -3,15 +3,18 @@
 
 USB_CDC_HANDLE usb_cdc_dev;
 
+static TX_SEMAPHORE usb_read_done;
+static uint16_t     usb_read_sz = 0;
+
 #define VENDOR_ID  0x058B
 #define PRODUCT_ID 0x0274
 
 static const USB_DEVICE_INFO device_info = {
-	0xCAFE,                        /* VendorId */
-	0xBEEF,                        /* ProductId */
-	"Isaac W",                     /* VendorName */
-	"I have no idea what this is", /* ProductName */
-	"1234567890"                   /* SerialNumber */
+	0xCAFE,             /* VendorId */
+	0xF00D,             /* ProductId */
+	"isaacwkz",         /* VendorName */
+	"PSoC6 AI DK Demo", /* ProductName */
+	"1234567890"        /* SerialNumber */
 };
 
 static void add_cdc(void);
@@ -28,6 +31,7 @@ void usb_stack_init(void) {
 	USBD_Start();
 }
 
+//------------------------- USB CDC Stuffs ------------------------//
 static uint8_t OutBuffer[USB_FS_BULK_MAX_PACKET_SIZE];
 
 static void add_cdc(void) {
@@ -62,12 +66,28 @@ static void add_cdc(void) {
 	}
 	LOG_INFO("Adding CDC iface\n\r");
 	usb_cdc_dev = USBD_CDC_Add(&cdc_info);
+
+	tx_semaphore_create(&usb_read_done, "USB read done", 0);
+}
+
+static void USBD_CDC_ReadDoneCB(USB_ASYNC_IO_CONTEXT_POI pContext) {
+	usb_read_sz = pContext->NumBytesTransferred;
+	tx_semaphore_put(pContext->pContext);
 }
 
 void usb_cdc_echo(void) {
-	char rx_buf[128] = {0};
-	int  rd_count    = USBD_CDC_Receive(usb_cdc_dev, rx_buf, 64, 0);
-	if (rd_count > 0) {
-		USBD_CDC_Write(usb_cdc_dev, rx_buf, rd_count, -1);
+	char rx_buf[USB_FS_BULK_MAX_PACKET_SIZE] = {0};
+
+	USB_ASYNC_IO_CONTEXT rd_ctx;
+	rd_ctx.NumBytesToTransfer = USB_FS_BULK_MAX_PACKET_SIZE;
+	rd_ctx.pData              = rx_buf;
+	rd_ctx.pContext           = &usb_read_done;
+	rd_ctx.pfOnComplete       = USBD_CDC_ReadDoneCB;
+
+	USBD_CDC_ReadAsync(usb_cdc_dev, &rd_ctx, 1);
+	if (tx_semaphore_get(&usb_read_done, TX_WAIT_FOREVER) == TX_SUCCESS) {
+		if (usb_read_sz > 0) {
+			USBD_CDC_Write(usb_cdc_dev, rx_buf, usb_read_sz, -1);
+		}
 	}
 }

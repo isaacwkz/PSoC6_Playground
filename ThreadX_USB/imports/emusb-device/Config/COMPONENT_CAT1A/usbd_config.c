@@ -66,9 +66,7 @@ Purpose     : emUSB-Device configuration file for CAT1A device
 #else
 #include "cyhal.h"
 #endif /* #if defined (USBD_USE_PDL) && (USBD_USE_PDL == 1U) */
-
-/* Define interrupt priority */
-#define USBD_ISR_PRIO (0U)
+#include "common.h"
 
 /*  Use the driver with DMA support. Can be defined in Makefile */
 #if !defined(USBD_ENABLE_DMA)

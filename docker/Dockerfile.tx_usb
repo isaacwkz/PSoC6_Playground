@@ -8,7 +8,7 @@ RUN apt update && apt install -y \
     git
 
 # Copy the source code into the container
-COPY ./First_Project/. /code
+COPY ./ThreadX_USB/. /code
 COPY ./mtb_shared /code/sdk
 
 # Create output directory

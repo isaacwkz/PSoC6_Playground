@@ -55,9 +55,9 @@
 TX_THREAD    thread_0;
 TX_THREAD    thread_1;
 TX_BYTE_POOL byte_pool_0;
-#define DEMO_BYTE_POOL_SIZE 102400
+#define DEMO_BYTE_POOL_SIZE 10240
 UCHAR memory_area[DEMO_BYTE_POOL_SIZE];
-#define DEMO_STACK_SIZE (20480)
+#define DEMO_STACK_SIZE (2048)
 
 /*******************************************************************************
  * Function Prototypes
@@ -101,8 +101,6 @@ int main(void) {
 
 	/* Initialize the User LED */
 	result = cyhal_gpio_init(CYBSP_USER_LED, CYHAL_GPIO_DIR_OUTPUT, CYHAL_GPIO_DRIVE_STRONG, CYBSP_LED_STATE_OFF);
-	result |= cyhal_gpio_init(P9_0, CYHAL_GPIO_DIR_OUTPUT, CYHAL_GPIO_DRIVE_STRONG, CYBSP_LED_STATE_OFF);
-	result |= cyhal_gpio_init(P9_1, CYHAL_GPIO_DIR_OUTPUT, CYHAL_GPIO_DRIVE_STRONG, CYBSP_LED_STATE_OFF);
 	cyhal_gpio_write(CYBSP_USER_LED, false);
 	/* GPIO init failed. Stop program execution */
 	if (result != CY_RSLT_SUCCESS) {
@@ -115,32 +113,6 @@ int main(void) {
 
 	/* Enable global interrupts */
 	__enable_irq();
-
-	// usb_stack_init();
-	///* Wait for configuration */
-	// while ((USBD_GetState() & USB_STAT_CONFIGURED) != USB_STAT_CONFIGURED) {
-	//	/* Ready to Read and Write HID messages. */
-	//	/* Waiting for USB_STAT_CONFIGURED */
-	//	cyhal_system_delay_ms(500);
-	//	cyhal_gpio_write(CYBSP_USER_LED, CYBSP_LED_STATE_ON);
-	//	cyhal_system_delay_ms(500);
-	//	cyhal_gpio_write(CYBSP_USER_LED, CYBSP_LED_STATE_OFF);
-	//	printf("Waiting for connection...\n");
-	// }
-	// LOG_INFO("USB is attached!\n\r");
-	// while (1) {
-	//	usb_cdc_echo();
-	//	// USB_DRIVER_Cypress_PSoC6_SysTick();
-	//	cyhal_gpio_toggle(CYBSP_USER_LED);
-	//	// tx_thread_sleep(10);
-	// }
-
-	// timer_init();
-	// while (1);
-
-	// for (uint32_t i = 0; i <= 50000000; i += 1) {
-	//	__ASM("nop");
-	// }
 
 	tx_kernel_enter();
 
@@ -160,12 +132,12 @@ void tx_application_define(void *first_unused_memory) {
 	tx_byte_allocate(&byte_pool_0, (VOID **)&pointer, DEMO_STACK_SIZE * 2, TX_NO_WAIT);
 	/* Create the main thread.  */
 	tx_thread_create(
-		&thread_0, "thread 0", thread_0_entry, 0, pointer, DEMO_STACK_SIZE * 2, 6, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
+		&thread_0, "thread 0", thread_0_entry, 0, pointer, DEMO_STACK_SIZE, 6, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
 	/* Allocate the stack for thread 0.  */
 	tx_byte_allocate(&byte_pool_0, (VOID **)&pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
 	/* Create the main thread.  */
 	tx_thread_create(
-		&thread_1, "thread 1", thread_1_entry, 0, pointer, DEMO_STACK_SIZE, 6, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
+		&thread_1, "thread 1", thread_1_entry, 0, pointer, DEMO_STACK_SIZE, 10, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
 
 	debug_console_init_mutex();
 }
@@ -177,19 +149,15 @@ void thread_0_entry(ULONG thread_input) {
 	while ((USBD_GetState() & USB_STAT_CONFIGURED) != USB_STAT_CONFIGURED) {
 		/* Ready to Read and Write HID messages. */
 		/* Waiting for USB_STAT_CONFIGURED */
-		cyhal_system_delay_ms(500);
+		tx_thread_sleep(150);
 		cyhal_gpio_write(CYBSP_USER_LED, CYBSP_LED_STATE_ON);
-		cyhal_system_delay_ms(500);
+		tx_thread_sleep(150);
 		cyhal_gpio_write(CYBSP_USER_LED, CYBSP_LED_STATE_OFF);
 		printf("Waiting for connection...\n");
 	}
 	LOG_INFO("USB is attached!\n\r");
 	while (1) {
 		usb_cdc_echo();
-		// USB_DRIVER_Cypress_PSoC6_SysTick();
-		LOG_INFO("Thread 0 spinning!\n\r");
-		// cyhal_gpio_toggle(CYBSP_USER_LED);
-		// tx_thread_sleep(1301);
 	}
 }
 
@@ -204,8 +172,6 @@ void thread_1_entry(ULONG thread_input) {
 		if (tx_semaphore_get(&timer_sem, TX_WAIT_FOREVER) == TX_SUCCESS) {
 			LOG_INFO("Thread 1 spinning!\n\r");
 			cyhal_gpio_toggle(CYBSP_USER_LED);
-			cyhal_gpio_toggle(P9_1);
-			tx_thread_sleep(773);
 		}
 	}
 }
@@ -245,21 +211,15 @@ void timer_init(void) {
 	cyhal_timer_register_callback(&led_blink_timer, isr_timer, NULL);
 
 	/* Set the event on which timer interrupt occurs and enable it */
-	cyhal_timer_enable_event(&led_blink_timer, CYHAL_TIMER_IRQ_TERMINAL_COUNT, 7, true);
+	cyhal_timer_enable_event(&led_blink_timer, CYHAL_TIMER_IRQ_TERMINAL_COUNT, BG_TIMER_ISR_PRIO, true);
 
 	/* Start the timer with the configured settings */
 	cyhal_timer_start(&led_blink_timer);
 }
 
-static volatile uint32_t bruhh = 0;
-
 static void isr_timer(void *callback_arg, cyhal_timer_event_t event) {
 	(void)callback_arg;
 	(void)event;
-
-	bruhh += 1;
-	// cyhal_gpio_toggle(P9_0);
-	// cyhal_gpio_toggle(CYBSP_USER_LED);
 	tx_semaphore_put(&timer_sem);
 }
 
