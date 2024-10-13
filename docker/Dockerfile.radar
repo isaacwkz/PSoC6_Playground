@@ -10,6 +10,7 @@ RUN apt update && apt install -y \
 # Copy the source code into the container
 COPY ./Radar/. /code
 COPY ./mtb_shared /code/sdk
+COPY ./deps /code/ext_libs
 
 # Create output directory
 RUN mkdir -p /out

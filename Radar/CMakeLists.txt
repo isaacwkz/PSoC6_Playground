@@ -108,7 +108,7 @@ file(GLOB_RECURSE SOURCES
 add_executable(${PROJECT_NAME}.elf ${SOURCES})
 
 # Add subdirectory for threadx
-add_subdirectory(${CMAKE_SOURCE_DIR}/deps)
+add_subdirectory(${CMAKE_SOURCE_DIR}/ext_libs)
 target_link_libraries(${PROJECT_NAME}.elf PUBLIC threadx_lib rtt_lib ${EMUSB_BINARY_LIB})
 target_include_directories(${PROJECT_NAME}.elf PUBLIC
         ${PROJECT_INC_DIRS}

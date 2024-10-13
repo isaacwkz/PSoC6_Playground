@@ -4,3 +4,9 @@
 [submodule "First_Project/deps/RTT"]
 	path = First_Project/deps/RTT
 	url = git@github.com:SEGGERMicro/RTT.git
+[submodule "deps/threadx"]
+	path = deps/threadx
+	url = git@github.com:eclipse-threadx/threadx.git
+[submodule "deps/RTT"]
+	path = deps/RTT
+	url = git@github.com:SEGGERMicro/RTT.git
